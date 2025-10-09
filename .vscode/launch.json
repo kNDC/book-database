@@ -12,7 +12,18 @@
             "args": [
             ],
             "cwd": "${workspaceFolder}/build",
-            "preLaunchTask": "GCC: Build Debug app",
+            "preLaunchTask": "GCC: Build Debug",
+            "initCommands": ["settings set target.disable-aslr false"]
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Launch Debug unit_tests",
+            "program": "${workspaceFolder}/build/unit_tests",
+            "args": [
+            ],
+            "cwd": "${workspaceFolder}/build",
+            "preLaunchTask": "GCC: Build Debug",
             "initCommands": ["settings set target.disable-aslr false"]
         }
     ]

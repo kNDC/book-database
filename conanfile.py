@@ -1,6 +1,7 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps
 from conan.tools.files import copy, rmdir
+from conan.tools.layout import basic_layout
 import os
 
 class BookDBConan(ConanFile):
@@ -13,9 +14,7 @@ class BookDBConan(ConanFile):
         self.tool_requires("cmake/3.30.0")
     
     def layout(self):
-        self.folders.source = "."
-        self.folders.build = "build"
-        self.folders.generators = "build/generators"
+        basic_layout(self, src_folder=".", build_folder="build")
     
     def generate(self):
         deps = CMakeDeps(self)

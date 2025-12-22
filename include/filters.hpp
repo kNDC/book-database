@@ -6,6 +6,7 @@
 #include "book.hpp"
 #include "concepts.hpp"
 
-namespace bookdb {
+namespace bookdb
+{
 
 }  // namespace bookdb

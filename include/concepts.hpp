@@ -35,22 +35,23 @@ namespace bookdb
     template <typename It>
     concept BookIterator = requires(It it)
     {
-        { *it } -> std::same_as<Book&>;
-        { it.operator->() } -> std::same_as<Book*>;
+        { *it } -> std::same_as<Book&>; // Dereferencing
+        { it.operator->() } -> std::same_as<Book*>; // Using '->'
     };
-
-    template <typename S, typename I>
-    concept BookSentinel = true;
 
     template <typename P>
     concept BookPredicate = requires(P p)
     {
+        /* Предикат принимает книгу, 
+        выдаёт логическую переменную */
         { p(Book{}) } -> std::same_as<bool>;
     };
 
     template <typename C>
     concept BookComparator = requires(C c)
     {
+        /* Сравниватель принимает две книги, 
+        выдаёт логическую переменную */
         { c(Book{}, Book{}) } -> std::same_as<bool>;
     };
 }  // namespace bookdb

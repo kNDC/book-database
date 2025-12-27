@@ -27,10 +27,7 @@ namespace bookdb
         vals(db.GetAuthors().size(), 0);
 
         std::flat_map out(keys, vals, cmp);
-        for (const Book& book : db)
-        {
-            ++out.at(book);
-        }
+        for (const Book& book : db) ++out.at(book);
         
         return out;
     }

@@ -9,16 +9,21 @@ int main()
     BookDatabase<std::vector<Book>> db;
     
     // Add some books
-    db.EmplaceBack("1984", "George Orwell", 1949, Genre::SciFi, 5.1, 190);
+    db.EmplaceBack("1984", "George Orwell", 1949, Genre::Fiction, 5.1, 190);
     db.EmplaceBack("Animal Farm", "George Orwell", 1945, Genre::Fiction, 4.4, 143);
     db.EmplaceBack("The Great Gatsby", "F. Scott Fitzgerald", 1925, Genre::Fiction, 4.5, 120);
     db.EmplaceBack("To Kill a Mockingbird", "Harper Lee", 1960, Genre::Fiction, 4.8, 156);
     db.EmplaceBack("Pride and Prejudice", "Jane Austen", 1813, Genre::Fiction, 4.7, 178);
     db.EmplaceBack("The Catcher in the Rye", "J.D. Salinger", 1951, Genre::Fiction, 4.3, 112);
-    db.EmplaceBack("Brave New World", "Aldous Huxley", 1932, Genre::SciFi, 4.5, 98);
+    db.EmplaceBack("Brave New World", "Aldous Huxley", 1932, Genre::Fiction, 4.5, 98);
     db.EmplaceBack("Jane Eyre", "Charlotte Brontë", 1847, Genre::Fiction, 4.6, 110);
     db.EmplaceBack("The Hobbit", "J.R.R. Tolkien", 1937, Genre::Fiction, 4.9, 203);
     db.EmplaceBack("Lord of the Flies", "William Golding", 1954, Genre::Fiction, 4.2, 89);
+    db.EmplaceBack("Histories", "Polybios", -130, Genre::NonFiction, 4.7, 57);
+    db.EmplaceBack("Parallel Lives", "Plutarch", 100, Genre::Biography, 4.8, 113);
+    db.EmplaceBack("On the Lives of the Caesars", "Gaius Suetonius Tranquillus", 110, Genre::Biography, 4.5, 231);
+    db.EmplaceBack("Historia Augusta", "Unknown", 350, Genre::Biography, 4.5, 132);
+    db.EmplaceBack("Roman History", "Ammianus Marcellinus", 392, Genre::NonFiction, 4.7, 89);
     std::println("{}", db);
     
     // Sorts

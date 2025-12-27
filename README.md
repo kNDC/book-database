@@ -1,114 +1,51 @@
-# cpp-middle-project-sprint-3 <!-- omit in toc -->
+# Book Database <!-- omit in toc -->
+Шаблонный класс для хранения и обработки записей о книгах с набором анализирующих функций.
 
-- [До начала использования Docker контейнера: Настройка переменных окружения](#до-начала-использования-docker-контейнера-настройка-переменных-окружения)
-- [Начало работы](#начало-работы)
-- [Сборка проекта и запуск тестов](#сборка-проекта-и-запуск-тестов)
-  - [Команды для сборки проекта](#команды-для-сборки-проекта)
-  - [Команда для запуска тестов](#команда-для-запуска-тестов)
-  - [Команда для запуска clang-format — обязательное требование перед сдачей работы на ревью](#команда-для-запуска-clang-format--обязательное-требование-перед-сдачей-работы-на-ревью)
-  - [Команды для запуска отладчика](#команды-для-запуска-отладчика)
-- [Дополнительно](#дополнительно)
+## Обзор класса и вспомогательных сущностей
+* Пространство имён -- bookdb;
+* `Genre` - `enum class`, перечень жанров: `Fiction` (художественная литература), `NonFiction` (нехудожественная литература), `SciFi` (научная фантастика), `Biography` (жизнеописания), `Mystery` (загадочное и таинственное), `Unknown` (неизвестный жанр);
+* `Book` - класс, с чьей помощью хранятся сведения о книге: писатель, название, жанр (см. выше), год написания, рейтинг и количество прочтений;
+* `BookDatabase` - основной класс, чьим шаблоном `BookContainer` выступает используемый контейнер для хранения данных о книгах (по умолчанию std::vector, но может использоваться любой другой, поддерживающий методы `size()`, `front()`, `back()`, `begin()`, `end()`, `cbegin()`, `cend()`).  Предлагает следующие методы:
+  * `const std::unordered_set<std::string_view>& GetAuthors()` -- перечень писателей, чьи работы были внесены в класс;
+  * `const BookContainer& GetBooks()` -- перечень внесённых книг;
+    
+  * `template <typename... Args> Book& EmplaceBack()` -- непосредственно инициализирует книгу в хранилище, избегая накладных расходов по копированию хранимых в ней сведений;
+  * `void PushBack()` -- добавляет ранее проинициализированную книгу в хранилище;
+  * `void Clear()` -- очищает содержимое хранилища;
+    
+* `BookDatabase` также предоставляет методы, позволяющие использовать класс в алгоритмах STL:
+  * `size_t size() const` -- количество хранимых книг;
+  * `BookDatabase::iterator begin()` -- возвращает итератор, соответствующий первой хранимой книге;
+  * `BookDatabase::iterator end()` -- возвращает итератор, указывающий за пределы множества хранимых книг;
+  * `BookDatabase::const_iterator begin() const`, `BookDatabase::const_iterator cbegin() const` -- возвращает `const`-итератор, соответствующий первой хранимой книге;
+  * `BookDatabase::const_iterator begin() const`, `BookDatabase::const_iterator cbegin() const` -- возвращает `const`-итератор, указывающий за пределы множества хранимых книг;
+  
+* В `Genre`, `Book` и `BookDatabase` включена поддержка `std::format` и `std::print`;
 
-
-Шаблон репозитория для практического задания 3-го спринта «Мидл разработчик С++»
-
-## До начала использования Docker контейнера: Настройка переменных окружения
-
-Для корректной работы контейнера добавьте в ваш bash-профиль две переменные окружения и обновите его, выполнив следующие команды:
-
-```bash
-# Set USER_UID and USER_GID
-echo -e '\nexport USER_UID=$(id -u)\nexport USER_GID=$(id -g)' >> ~/.bashrc
-
-# Update bash-profile
-source ~/.bashrc
-```
-
-Перед началом работы с Docker контейнером, убедитесь, что переменные окружения доступны, внутри используемой вами IDE (например в терминале внутри VS Code):
-
-```bash
-printf "\nUSER_UID=${USER_UID=}\nUSER_GID=${USER_GID}\n\n"
-```
-
-## Начало работы
-
-1. Убедитесь, что переменные окружения из предыдущего шага доступны внутри вашей IDE
-2. Нажмите зелёную кнопку `Use this template`, затем `Create a new repository`.
-3. Назовите свой репозиторий.
-4. Склонируйте созданный репозиторий командой `git clone your-repository-name`.
-5. Создайте новую ветку командой `git switch -c development`.
-6. Откройте проект в `Visual Studio Code`.
-7. Нажмите `F1` и откройте проект в dev-контейнере командой `Dev Containers: Reopen in Container`.
-
-![Reopen in container](misc/reopen_in_container.png)
-
-## Сборка проекта и запуск тестов
-
-Данный репозиторий использует три инструмента:
-
-- **Conan** — свободный менеджер пакетов для C и C++ с открытым исходным кодом (MIT). Позволяет настраивать процесс сборки программ, скачивать и устанавливать сторонние зависимости и необходимые инструменты. Подробнее о Conan:
-  - https://habr.com/ru/articles/884464
-  - https://docs.conan.io/2.0/tutorial/consuming_packages/build_simple_cmake_project.html
-  - https://docs.conan.io/2.0/tutorial/consuming_packages/the_flexibility_of_conanfile_py.html
-
-- **cmake** — генератор систем сборки для C и C++. Позволяет создавать проекты, которые могут компилироваться на различных платформах и с различными компиляторами. Подробнее о cmake:
-  - https://dzen.ru/a/ZzZGUm-4o0u-IQlb
-  - https://neerc.ifmo.ru/wiki/index.php?title=CMake_Tutorial
-  - https://cmake.org/cmake/help/book/mastering-cmake/cmake/Help/guide/tutorial/index.html
-
-- **VS Code Dev Docker container** - Docker контейнер, который содержит полностью настроенное окружение для выполнение задания. Подробнее об этой функциональности:
-  - https://habr.com/ru/articles/822707/ - "Почти все, что вы хотели бы знать про Docker"
-  - https://code.visualstudio.com/docs/devcontainers/containers - официальная документация VS Code
-  - https://www.youtube.com/watch?v=p9L7YFqHGk4 - "Docker container for VS Code"
-  - https://www.youtube.com/watch?v=pg19Z8LL06w&t=174s&pp=ygUPRG9ja2VyY29udGFpbmVy - "Docker in 1 hour"
-
-### Команды для сборки проекта
-
-Используйте `F5` для выполнения следующих шагов:
-- Создания папки `build`
-- Вызова `conan` команд для установки требуемых библиотек и запуска процесса сборки
-- Запуска `lldb` отладчика
-
-Также, вы можете запустить только команду построения проекта. Для этого:
-
-- вызовите командное окно, нажав `F1`
-
-- Выберите команду `Tasks: Run Task`
-
-![](misc/select_vscode_tasks.png)
-
-- Выберите команду сборки проекта, например `GCC: Build Debug app`
-
-![](misc/select_concrete_task.png)
-
-### Команда для запуска тестов
-
-Для запуска тестов вы можете воспользоваться удобным расширением `C++ TestMate`:
-
-![](misc/test_mate.png)
-
-### Команда для запуска clang-format — обязательное требование перед сдачей работы на ревью
-
-В этом репозитории настроен автоматический запуск clang-format (файл конфигурации — .vscode/settings.json) при сохранении любого файла с кодом.
-
-Убедитесь, что эта функциональность работает:
-- Добавьте несколько пустых линий в любой файл.
-- Сохраните файл.
-- Если пустые линии были удалены, всё работает, если нет — убедитесь, что clangd работает (при открытии файла с кодом в самом низу VS Code на голубой полоске должно быть написано clangd: idle). Для этого:
-    - нажмите `F1` и выполните команду `clangd: Download language server`;
-    - нажмите `F1` и выполните команду `clangd: Restart language server`;
-    - нажмите `F1` и выполните команду `Developer: Reload Window`.
-
-### Команды для запуска отладчика
-
-В Visual Studio Code настройки параметров для запуска отладчика находятся в файле .vscode/launch.json. Поскольку в этом файле для запуска приложения уже есть одна конфигурация `Launch *`, то для запуска отладчика достаточно нажать F5 или открыть окно Run and Debug комбинацией клавиш `Ctrl+Shift+D`.
-
-## Дополнительно
-
-Для настройки автодополнения `Ctrl + Space` нажмите `F1` и выполните команду `clangd: Download language server`. VS Code сам предложит установить подходящую версию clangd (всплывашка в правом нижнем углу). После завершения установки перезагрузите окно кнопкой перезапуска справа снизу или с помощью `F1` и выполните команду `Developer: Reload Window`.
-
-Если всё сделали правильно, то после успешной сборки проекта вы сможете использовать автодополнение.
-
-![Скриншот 2](misc/clangd_1.png)
-
-![Скриншот 3](misc/clangd_2.png)
+## Обзор анализирующих функций
+* Пространство имён -- bookdb;
+* `template <BookContainerLike T, 
+    typename Cmp = TransparentStringLess>
+  std::flat_map<std::string_view, unsigned, Cmp>  
+  BuildAuthorHistogramFlat(const BookDatabase<T>& db, Cmp cmp = {})` -- производит гистограмму количества включённых в `db` книг по писателям с использованием сравнивающей функции (компаратора) `cmp`;
+* `template <BookContainerLike T>
+  std::flat_map<Genre, double> 
+  CalculateGenreRatings(const BookDatabase<T>& db)` -- подсчитывает распределение рейтингов, взвешенных по количеству прочтений, по представленным в хранилище жанрам; 
+* `template <BookContainerLike T>
+  constexpr double CalculateAverageRating(const BookDatabase<T>& db)` -- подсчитывает средний рейтинг, взвешенный по количеству прочтений;
+* `template <BookContainerLike T>
+  BookData SampleRandomBooks(const BookDatabase<T>& db, 
+    size_t sample_size)` -- выводит случайную выборку из `sample_size` книг в виде вектора ссылок на книги `BookData = std::vector<std::reference_wrapper<const Book>>`;
+* `template <BookContainerLike T, 
+    BookComparator Cmp = comp::LessByRating<>>
+  BookData GetTopNBy(BookDatabase<T>& db, size_t top_size, 
+    Cmp cmp = Cmp{})` -- выводит `top_size` наилучших книг в соответствии со сравнивающей функцией `Cmp = comp::LessByRating<>>` (книги с наилучшим рейтингом по умолчанию);
+  
+* `auto YearBetween(int from, int to)` -- производит фильтрующую сущность - лямбда-функцию, отбирающую книги по попаданию во временной отрезок `[from; to]`;
+* `auto RatingAbove(double threshold)` -- аналогично предыдущему, отсев по рейтингу выше, чем `threshold`;
+* `auto GenreIs(Genre genre)` -- аналогично предыдущему, отсев по соответствию требуемому жанру `genre`;
+  
+* `template <BookPredicate... Ps> auto all_of(Ps... ps)` -- комбинирующая отсеивающая сущность, выбирает книги, соответствующие каждому из условий-предикатов `Ps...`, для каждого из которых определена возможность поставить книге `Book` в соответстие логическое значение (удовлетворяется тремя предыдущими фильтрами);  
+* `template <BookPredicate... Ps> auto any_of(Ps... ps)` -- аналогично предыдущему, но отбираются книги удовлетворяющие любому из условий `Ps...`; 
+* `template <BookIterator It, BookPredicate P>
+  BookData FilterBooks(It from, It to, P&& p)` -- выбирает книги в пределах, заданных итераторами `from` и `to`, соответствующие условию-предикату `p`;
